@@ -5,10 +5,15 @@
 	import Switch from '@/components/ui/switch/switch.svelte';
 	import Label from '@/components/ui/label/label.svelte';
 	import Button from '@/components/ui/button/button.svelte';
-	import { ModeWatcher, toggleMode } from 'mode-watcher';
+	import { ModeWatcher as ModeWatcherUtility } from 'mode-watcher';
 	import { Sun, Moon, Bell } from 'lucide-svelte';
 	import { Toaster } from '@/components/ui/sonner';
 	import { toast } from 'svelte-sonner';
+	import * as DropdownMenu from '@/components/ui/dropdown-menu';
+	import ThemeWatcher from '@/components/theme_watcher/theme_watcher.svelte';
+	import ModeWatcher from '@/components/mode_watcher/mode_watcher.svelte';
+	import TitleBar from '@/components/title_bar/title_bar.svelte';
+	import clsx from 'clsx';
 
 	let showAppHeader = true;
 	let showAppFooter = true;
@@ -16,69 +21,68 @@
 	let showPageFooter = true;
 	let showSidebarLeft = true;
 	let showSidebarRight = true;
+	let mini = false;
 </script>
 
-<ModeWatcher />
+<ModeWatcherUtility />
 <Toaster richColors />
-<AppShell class="text-black dark:text-white">
+<AppShell class="skeleton text-surface-900-50-token font-star-rail  text-sm">
+	<!-- Title Bar -->
+	<svelte:fragment slot="titleBar">
+		<TitleBar />
+	</svelte:fragment>
 	<!-- App Header -->
 	<svelte:fragment slot="appHeader">
 		{#if showAppHeader}
-			<div class="flex h-16 flex-row items-center gap-2 bg-red-200 p-4 dark:bg-red-800">
+			<div
+				class="decoration-surface-300-400-token bg-surface-100-800-token border-surface-900-50-token flex h-16 flex-row items-center gap-2 border-b p-4 pr-2 dark:border-surface-500"
+			>
 				<h1 class="w-full text-white">App Header</h1>
 				<Button
 					on:click={() =>
 						toast.success('This is a toast message', {
 							description: 'Test Message',
-							icon: Bell,
 							action: { label: 'Undo', onClick: () => console.info('Undo') }
 						})}
-					variant="outline"
 					size="icon"
+					variant="ghost"
 				>
-					<Bell class="h-[1.2rem] w-[1.2rem]" />
+					<Bell class="h-5 w-5" />
 					<span class="sr-only">Show notifications</span>
 				</Button>
-				<Button on:click={toggleMode} variant="outline" size="icon">
-					<Sun
-						class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-					/>
-					<Moon
-						class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-					/>
-					<span class="sr-only">Toggle theme</span>
-				</Button>
+				<ModeWatcher />
+				<ThemeWatcher />
 			</div>
 		{/if}
 	</svelte:fragment>
 	<!-- App Footer -->
 	<svelte:fragment slot="appFooter">
 		{#if showAppFooter}
-			<div class="h-16 bg-blue-500">
-				<h1 class="text-white">App Footer</h1>
+			<div class="bg-surface-100-800-token h-16">
+				<h1 class="">App Footer</h1>
 			</div>
 		{/if}
 	</svelte:fragment>
 	<!-- Page Header -->
 	<svelte:fragment slot="pageHeader">
 		{#if showPageHeader}
-			<div class="h-16 bg-green-500">
-				<h1 class="text-white">Page Header</h1>
+			<div class="h-16 bg-primary-500">
+				<h1 class="text-on-primary-token">Page Header</h1>
 			</div>
 		{/if}
 	</svelte:fragment>
 	<!-- Page Footer -->
 	<svelte:fragment slot="pageFooter">
 		{#if showPageFooter}
-			<div class="h-16 bg-yellow-500">
-				<h1 class="text-white">Page Footer</h1>
+			<div class="h-16 bg-secondary-500">
+				<h1 class="text-on-secondary-token">Page Footer</h1>
 			</div>
 		{/if}
 	</svelte:fragment>
 	<!-- Sidebar (Left) -->
 	<svelte:fragment slot="sidebarLeft">
 		{#if showSidebarLeft}
-			<div class="h-full w-64 bg-gray-500">
+			<div class={clsx('bg-surface-200-700-token h-full transition-all', mini ? 'w-20' : 'w-64')}>
 				<h1 class="text-white">Sidebar (Left)</h1>
 			</div>
 		{/if}
@@ -86,13 +90,13 @@
 	<!-- Sidebar (Right) -->
 	<svelte:fragment slot="sidebarRight">
 		{#if showSidebarRight}
-			<div class="h-full w-64 bg-gray-500">
-				<h1 class="text-white">Sidebar (Right)</h1>
+			<div class="h-full w-64 bg-tertiary-100 dark:bg-tertiary-900">
+				<h1 class="text-on-tertiary-token">Sidebar (Right)</h1>
 			</div>
 		{/if}
 	</svelte:fragment>
 	<!-- Page Content -->
-	<div class="h-full w-full bg-white p-2 text-black dark:bg-black dark:text-white">
+	<div class="bg-surface-50-900-token h-full w-full p-2">
 		<div class="flex flex-col gap-2">
 			<div class="flex h-full flex-row items-center gap-2">
 				<Switch id="show-app-header" bind:checked={showAppHeader} />
@@ -117,6 +121,10 @@
 			<div class="flex h-full flex-row items-center gap-2 align-middle">
 				<Switch id="show-sidebar-right" bind:checked={showSidebarRight} />
 				<Label for="show-sidebar-right">Show Sidebar (Right)</Label>
+			</div>
+			<div class="flex h-full flex-row items-center gap-2 align-middle">
+				<Switch id="mini-sidebar" bind:checked={mini} />
+				<Label for="mini-sidebar">Mini Sidebar</Label>
 			</div>
 		</div>
 		<Separator class="my-4" />

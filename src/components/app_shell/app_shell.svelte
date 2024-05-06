@@ -15,6 +15,7 @@
 <script lang="ts">
 	// Slots
 	/**
+	 * @slot titleBar - Insert content for the title bar.
 	 * @slot appHeader - Insert fixed header content, such as an app bar.
 	 * @slot sidebarLeft - Insert content for the left sidebar. Hidden when empty.
 	 * @slot sidebarRight - Insert content for the right sidebar. Hidden when empty.
@@ -34,6 +35,8 @@
 	// Props (Regions)
 	/** Apply arbitrary classes to the entire '#page' region. */
 	export let regionPageClasses: CssClasses = '';
+	/** Apply arbitrary classes to the 'titleBar' slot container element. */
+	export let slotTitleBarClasses: CssClasses = '';
 	/** Apply arbitrary classes to the 'appHeader' slot container element. */
 	export let slotAppHeaderClasses: CssClasses = 'z-10';
 	/** Apply arbitrary classes to the 'sidebarLeft' slot container element. */
@@ -50,7 +53,7 @@
 	export let slotAppFooterClasses: CssClasses = '';
 
 	// Base classes
-	const cAppShellClasses = 'w-full h-full flex flex-col overflow-hidden';
+	const cAppShellClasses = 'w-full h-full flex flex-col overflow-hidden rounded-lg';
 	const cContentClasses = 'w-full h-full flex overflow-hidden';
 	const cPageClasses = 'flex flex-1 flex-col overflow-x-hidden';
 	const cSidebarLeftClasses = 'flex-none overflow-x-hidden overflow-y-auto';
@@ -58,6 +61,7 @@
 
 	// Reactive classes
 	$: appShellClasses = `${cAppShellClasses} ${$$props.class ?? ''}`;
+	$: titleBarClasses = `${slotTitleBarClasses}`;
 	$: appHeaderClasses = `${slotAppHeaderClasses}`;
 	$: sidebarLeftClasses = `${cSidebarLeftClasses} ${slotSidebarLeftClasses}`;
 	$: sidebarRightClasses = `${cSidebarRightClasses} ${slotSidebarRightClasses}`;
@@ -68,6 +72,12 @@
 </script>
 
 <div id="appShell" class={appShellClasses} data-testid="app-shell">
+	<!-- Slot: Title Bar -->
+	{#if $$slots.titleBar && window.__TAURI__}
+		<div id="shell-title-bar" class={titleBarClasses}>
+			<slot name="titleBar" />
+		</div>
+	{/if}
 	<!-- Slot: Header -->
 	{#if $$slots.appHeader}
 		<header id="shell-header" class="flex-none {appHeaderClasses}">
